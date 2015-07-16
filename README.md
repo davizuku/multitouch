@@ -3,6 +3,7 @@
 ## Multitouch SVG
 
 Please find in http://davizuku.github.io/multitouch/multi_svg.html the main testing of Multitouch with SVG graphics.
+
 Libraries Used: 
   - jQuery: basic element manage (hide / show)
   - [Hammer.js](http://hammerjs.github.io/) for capturing the multitouch gestures (Panning, Rotating and Pinching/Zooming)
