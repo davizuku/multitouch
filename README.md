@@ -18,7 +18,14 @@ Utilities implemented:
 ### Timeglider
 
 Find in http://davizuku.github.io/multitouch/testglider.html a simple test of the [Timeglider.js](http://timeglider.com/) library.
+ - Mouse horizontal panning
+ - Wheelmouse zooming
+ - Timeline legend resizing according to zoom scale
+ - Event selection
 
 ### Flotcharts
 
 Find in http://davizuku.github.io/multitouch/timeline.html another simple test of the [Flotcharts.js](http://www.flotcharts.org/) library.
+ - Mouse panning
+ - Wheelmouse zooming
+ 
