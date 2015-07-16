@@ -67,6 +67,7 @@
             };
 
             var idTest = "#test1";
+            $(idTest).show();
             var startData = getData(-10, 10);
             var options = {
     			legend: {
@@ -100,7 +101,7 @@
                 startData,
                 options
             );
-            /*
+
             $(idTest).click(function(ev){
                 var ranges = {
                     xaxis : {
@@ -113,7 +114,7 @@
                     }
                 };
                 plot.setSelection(ranges);
-            });
+            })
             .bind("plotselected", function (event, ranges) {
 
     			// clamp the zooming to prevent eternal zoom
@@ -135,7 +136,6 @@
     				})
     			);
     		});
-            */
         };
 
         function useWindowConsole(){
