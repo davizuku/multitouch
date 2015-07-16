@@ -1,0 +1,104 @@
+<!--
+Ejemplo de KineticJS Library con HTML5
+
+Autor: Alejandro A. De Luca
+E-Mail: contacto@elreplicante.com.ar
+web: http://www.elreplicante.com.ar
+Fecha: 27/04/2012
+
+-->
+
+<!DOCTYPE html>
+<head>
+<title>Ejemplo 1 - KineticJS Library con HTML5</title>
+<script src="kinetic-v5.1.0.js"></script>
+<script>
+
+    function setTest1() {
+
+        // creacion del escenario
+        var escenario = new Kinetic.Stage({
+            container: 'miCanvas',
+            width: 640,
+            height: 480,
+        });
+
+        var principal = new Kinetic.Layer();
+        var fondo = new Kinetic.Layer();
+
+        // creacion de un circulo
+        var circle = new Kinetic.Circle({
+            x: 75,
+            y: 75,
+            radius: 50,
+            fill: "blue",
+            stroke: "#000",
+            strokeWidth: 2,
+            draggable: true
+        });
+        principal.add(circle);
+
+        // creacion de un rectangulo
+        var rect = new Kinetic.Rect({
+            x: 150,
+            y: 100,
+            width: 120,
+            height: 80,
+            fill: "green",
+            stroke: "#000",
+            strokeWidth: 2,
+            draggable: true
+        });
+
+        principal.add(rect);
+
+
+        // creacion de texto
+        var texto = 'El Replicante';
+        var txt = new Kinetic.Text({
+            text: texto,
+            fontSize: 32,
+            fontFamily: 'Arial',
+            textFill: '#000',
+            x: 350,
+            y: 300
+        });
+
+        principal.add(txt);
+
+
+        // creacion de una imagen
+        var imagen = new Image();
+        imagen.src = 'playa.jpg';
+
+        var imgFondo = new Kinetic.Image({
+            image: imagen,
+            x: 0,
+            y: 0,
+            width: 640,
+            height: 480
+        });
+
+
+        fondo.add(imgFondo);
+
+        escenario.add(fondo);
+        escenario.add(principal);
+        escenario.draw();
+
+    };
+
+    function setEnv(){
+        setTest1();
+    };
+</script>
+<style>
+canvas {
+    border: 1px solid #000;
+}
+</style>
+</head>
+<body onload="setEnv()">
+<div id="miCanvas"></div>
+</body>
+</html>

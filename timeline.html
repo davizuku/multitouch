@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1,
+                 maximum-scale=1, user-scalable=0"/>
+
+    <title>Timeline test</title>
+
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="bower_components/flot/jquery.flot.js"></script>
+    <script type="text/javascript" src="bower_components/flot/jquery.flot.navigate.js"></script>
+
+    <style>
+        html, body {
+          overflow-x: hidden;
+        }
+        body {
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          clear: both;
+        }
+
+        #test1 {
+            position: relative;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            border: 5px dashed red;
+        }
+
+        .console {
+            border: 2px solid red;
+            width: 100%;
+            height: 100px;
+            font: 12px "Lucida Console", Monaco, monospace;
+            color: black;
+            position: fixed;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            overflow: scroll;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function setUpTest1(){
+            function getData(x1, x2){
+                var d = [];
+    			for (var i = 0; i <= 100; ++i) {
+    				var x = x1 + i * (x2 - x1) / 100;
+    				d.push([x, Math.sin(x * Math.sin(x))]);
+    			}
+
+    			return [
+    				{ label: "sin(x sin(x))", data: d }
+    			];
+            };
+
+            var idTest = "#test1";
+            var startData = getData(-10, 10);
+            var options = {
+    			legend: {
+    				show: false
+    			},
+    			series: {
+    				lines: {
+    					show: true
+    				},
+    				points: {
+    					show: true
+    				}
+    			},
+                xaxis: {
+    				zoomRange: [0.1, 10],
+    				panRange: [-10, 10]
+    			},
+    			yaxis: {
+    				zoomRange: [0.1, 10],
+    				panRange: [-10, 10]
+    			},
+    			zoom: {
+    				interactive: true
+    			},
+    			pan: {
+    				interactive: true
+    			}
+    		};
+            var plot = $.plot(
+                $(idTest),
+                startData,
+                options
+            );
+            /*
+            $(idTest).click(function(ev){
+                var ranges = {
+                    xaxis : {
+                        from : 0.1,
+                        to : 0.9
+                    },
+                    yaxis : {
+                        from : 0.1,
+                        to : 0.9
+                    }
+                };
+                plot.setSelection(ranges);
+            });
+            .bind("plotselected", function (event, ranges) {
+
+    			// clamp the zooming to prevent eternal zoom
+
+    			if (ranges.xaxis.to - ranges.xaxis.from < 0.00001) {
+    				ranges.xaxis.to = ranges.xaxis.from + 0.00001;
+    			}
+
+    			if (ranges.yaxis.to - ranges.yaxis.from < 0.00001) {
+    				ranges.yaxis.to = ranges.yaxis.from + 0.00001;
+    			}
+
+    			// do the zooming
+
+    			plot = $.plot(idTest, getData(ranges.xaxis.from, ranges.xaxis.to),
+    				$.extend(true, {}, options, {
+    					xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
+    					yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
+    				})
+    			);
+    		});
+            */
+        };
+
+        function useWindowConsole(){
+            var terminal = document.getElementById('console');
+            console.log = function(message) {
+                try {
+                    var jsonMsg = JSON.stringify(message);
+                }
+                catch (err){
+                    jsonMsg = message;
+                }
+
+                terminal.innerHTML = terminal.innerHTML + '<br />' + jsonMsg;
+                terminal.scrollTop = terminal.scrollHeight;
+            };
+        }
+
+        function setUpEnv(){
+            $("#console").hide();
+            $("#test1").hide();
+
+
+            setUpTest1();
+        }
+
+    </script>
+</head>
+<body onload="setUpEnv()">
+    <div id="test1"></div>
+    <div id="console" class="console"></div>
+</body>
+</html>

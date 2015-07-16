@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1,
+                 maximum-scale=1, user-scalable=0"/>
+
+    <title>Multitouch test</title>
+
+
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+    <script type="text/javascript" src="multitouch.js"></script>
+
+    <style>
+        html, body {
+          overflow-x: hidden;
+        }
+        body {
+          position: relative;
+          top: 0;
+          left: 0;
+          margin: 0;
+          padding: 0;
+        }
+
+        #test1 {
+            position: fixed;
+            top: 350px;
+            left: 0px;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+        }
+
+        #test2{
+            position: fixed;
+            top:0px;
+            border: 5px solid green
+        }
+
+        #test3{
+            position: fixed;
+            top: 200px;
+            left: 100px;
+            width: 200px;
+            height: 120px;
+            background-image: url("playa.jpg");
+            background-size: 200px 120px;
+            background-repeat: no-repeat;
+        }
+
+        #test4{
+            position: fixed;
+            top: 200px;
+            left: 100px;
+            width: 200px;
+            height: 120px;
+            background-image: url("mountains.jpg");
+            background-size: 200px 120px;
+            background-repeat: no-repeat;
+        }
+
+        .console {
+            border: 2px solid red;
+            width: 100%;
+            height: 100px;
+            font: 12px "Lucida Console", Monaco, monospace;
+            color: black;
+            position: fixed;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            overflow: scroll;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function setUpTest1(){
+            var obj = document.getElementById('test1');
+            $(obj).show()
+            console.log("object: ");
+            console.log(obj);
+
+            var dx = 0;
+            var dy = 0;
+            obj.addEventListener('touchstart', function(event){
+                if (event.targetTouches.length == 1){
+                    var touch = event.targetTouches[0];
+                    objRect = obj.getBoundingClientRect();
+                    dx = objRect.left - touch.pageX;
+                    dy = objRect.top - touch.pageY;
+                }
+            });
+            obj.addEventListener('touchmove', function(event) {
+              // If there's exactly one finger inside this element
+              if (event.targetTouches.length == 1) {
+                var touch = event.targetTouches[0];
+                // Place element where the finger is
+                obj.style.left = ( touch.pageX + dx ) + 'px';
+                obj.style.top = ( touch.pageY + dy ) + 'px';
+              }
+            }, false);
+        };
+
+        function setUpTest2(){
+            // Setup canvas and expose context via ctx variable
+            var canvas = document.getElementById("test2");
+            $(canvas).show();
+            var ctx = canvas.getContext("2d");
+
+            ctx.lineWidth="1";
+            ctx.strokeStyle="blue";
+            ctx.fillStyle="lightblue";
+
+            canvas.addEventListener('touchmove', function(event) {
+              for (var i = 0; i < event.touches.length; i++) {
+                var touch = event.touches[i];
+                ctx.beginPath();
+                ctx.arc(touch.pageX, touch.pageY, 5, 0, 2*Math.PI, true);
+                ctx.fill();
+                ctx.stroke();
+              }
+            }, false);
+        }
+
+        function setUpTest3(){
+            var obj = $("#test3").show();
+
+            var quoObj = $$("#test3");
+
+            var quoObjIniPos = quoObj.offset();
+
+            quoObj.tap(function(e){
+                console.log("image tap");
+                console.log(e);
+                console.log("size: " + quoObj.width() + " " + quoObj.height());
+            })
+            .swiping(function(e){
+                var iniX = quoObjIniPos.left;
+                var iniY = quoObjIniPos.top;
+                var x = e.currentTouch.x - quoObj.width() / 2 - iniX;
+                var y = e.currentTouch.y - quoObj.height() / 2 - iniY;
+                quoObj.vendor('transform', 'translate(' + x +'px,'+ y +'px)');
+           })
+           .pinching(function(e){
+               var objWidth = Math.max(1.0, quoObj.width());
+               var objHeight = Math.max(1.0, quoObj.height());
+               var objDiag = Math.sqrt(objWidth * objWidth + objHeight * objHeight);
+               var scale = Math.max(0.1, 1 + e.distance / objDiag);
+               console.log("scaling: " + scale);
+               quoObj.vendor('transform', 'scale(' + scale + ')');
+           })
+           .rotating(function(e){
+               console.log("rotating: " + e.angle);
+               quoObj.vendor('transform', 'rotate('+ e.angle + 'deg)');
+           });
+
+        }
+
+        function setUpTest4(){
+            jQuery.map($(".multitouchanimated").show(), function(item){
+                MultitouchAnimate(item);
+            });
+        }
+
+
+        function useWindowConsole(){
+            var terminal = document.getElementById('console');
+            console.log = function(message) {
+                try {
+                    var jsonMsg = JSON.stringify(message);
+                }
+                catch (err){
+                    jsonMsg = message;
+                }
+
+                terminal.innerHTML = terminal.innerHTML + '<br />' + jsonMsg;
+                terminal.scrollTop = terminal.scrollHeight;
+            };
+        }
+
+        function setUpEnv(){
+            document.body.addEventListener('touchmove', function(event) {
+              event.preventDefault();
+            }, false);
+
+            $("#test1").hide();
+            $("#test2").hide();
+            $("#test3").hide();
+            $("#test4").hide();
+            $("#console").hide();
+
+            //setUpTest1();
+            //setUpTest2();
+            //setUpTest3();
+            setUpTest4();
+        }
+
+    </script>
+</head>
+<body onload="setUpEnv()">
+    <div id="test1"></div>
+    <canvas id="test2" width="300px" height="300px">Not using HTML5!!</canvas>
+    <div id="test3" class="multitouchanimated"></div>
+    <div id="test4" class="multitouchanimated"></div>
+    <div id="console" class="console"></div>
+</body>
+</html>

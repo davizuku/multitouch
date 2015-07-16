@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1,
+                 maximum-scale=1, user-scalable=0"/>
+
+    <title>SVG with Multitouch test</title>
+
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="raphael-min.js"></script>
+    <script type="text/javascript" src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+    <script type="text/javascript" src="multitouch.js"></script>
+    <script type="text/javascript" src="hammer-movement.js"></script>
+
+    <style>
+        html, body {
+          overflow-x: hidden;
+        }
+        body {
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          clear: both;
+        }
+
+        #test1 {
+            position: relative;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            border: 0px dotted gray;
+            margin: 0;
+        }
+
+        .console {
+            border: 2px solid red;
+            width: 100%;
+            height: 100px;
+            font: 14px "Lucida Console", Monaco, monospace;
+            color: black;
+            position: fixed;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            overflow: scroll;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function printRules(interval, paper, atts){
+            var w = paper.width;
+            var h = paper.height;
+
+            for (var i = 0; i < w; i += interval){
+                var strLine = "M" + i + " 0L" + i + " " + h
+                var iLine = paper.path(strLine);
+                iLine.attr(atts);
+            }
+
+            for (var j = 0; j < h; j += interval){
+                var strLine = "M0 " + j + "L" + w + " " + j
+                var jLine = paper.path(strLine);
+                jLine.attr(atts);
+            }
+        }
+
+        function setUpTest1(){
+            InitMultiTouch();
+
+            var svg = $("#test1").show().get(0);
+
+            var paper = new Raphael(svg);
+            printRules(10, paper, {
+                "stroke" : "#F93",
+                "stroke-opacity" : 0.1,
+            });
+            printRules(50, paper, {
+                "stroke" : "#F93",
+                "stroke-opacity" : 0.2,
+            });
+            printRules(100, paper, {
+                "stroke" : "#F93",
+                "stroke-opacity" : 0.3,
+            });
+
+            var rect = paper.rect(200, 100, 200, 50, 10)
+            rect.attr({
+                "fill": "#f00",
+                "stroke": "#000"
+            });
+
+            rect.transform("T0,0");
+
+            var moveRect = new HammerMovement(new Hammer.Manager(rect.node),
+            function(t){
+                var obj = rect;
+                obj.transform(
+                    "t" + t.translate.x + ",0" +
+                    "s" + t.scale
+                );
+                if (t.scale > 1.8){
+                    obj.attr({"fill": "#00f"});
+                }
+                else if (t.scale > 1.4){
+                    obj.attr({"fill": "#0f0"});
+                }
+                else {
+                    obj.attr({"fill": "#f00"});
+                }
+            });
+
+
+            var ellipse = paper.ellipse(70, 50, 70, 35);
+            ellipse.attr({
+                "fill" : "hsl(0, 100%, 50%)",
+                "fill-opacity" : 0.8,
+                "stroke" : "#660",
+            });
+
+            var moveEllipse = new HammerMovement(new Hammer.Manager(ellipse.node),
+            function(t){
+                var obj = ellipse;
+                obj.transform(
+                    "t" + t.translate.x + "," + t.translate.y +
+                    "s" + t.scale +
+                    "r" + t.angle
+                );
+                var hue = Math.abs(t.angle);
+                obj.attr({"fill" : "hsl(" + hue + ", 100%, 50%)"});
+            });
+
+
+            var circ = paper.circle(70, 200, 60);
+            circ.attr({
+                "fill" : "#00f",
+                "stroke" : "#00a",
+                "fill-opacity" : 2/3,
+            });
+
+            var moveCirc = new HammerMovement(new Hammer.Manager(circ.node),
+            function(t){
+                var obj = circ;
+                obj.transform(
+                    "t" + t.translate.x + "," + t.translate.y +
+                    "s" + t.scale
+                );
+                obj.attr({"fill-opacity" : 1 - t.scale / 3});
+            });
+
+
+            
+        };
+
+        function useWindowConsole(){
+            $("#console").show();
+            var terminal = document.getElementById('console');
+            console.log = function(message) {
+                try {
+                    var jsonMsg = JSON.stringify(message);
+                }
+                catch (err){
+                    jsonMsg = message;
+                }
+
+                terminal.innerHTML = terminal.innerHTML + '<br />' + jsonMsg;
+                terminal.scrollTop = terminal.scrollHeight;
+            };
+        }
+
+        function setUpEnv(){
+            $("#console").hide();
+            $("#test1").hide();
+
+            //useWindowConsole();
+            setUpTest1();
+        }
+
+    </script>
+</head>
+<body onload="setUpEnv()">
+    <div id="test1"></div>
+    <div id="console" class="console"></div>
+</body>
+</html>
